@@ -40,20 +40,33 @@ public class FinancialTrackerFrame extends JFrame {
 
     private final JTextField vendorSearchField = new JTextField(15);
 
+    private final JLabel totalLabel = new JLabel("Total: 0.00");
+
     public FinancialTrackerFrame() {
         super("Financial Tracker");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(900, 550);
         setLocationRelativeTo(null);
 
+        setLayout(new BorderLayout());
+
         JTabbedPane tabs = new JTabbedPane();
         tabs.addTab("Add Transaction", buildAddPanel());
         tabs.addTab("Ledger", buildLedgerPanel());
         tabs.addTab("Reports", buildReportsPanel());
 
-        add(tabs);
+        add(tabs, BorderLayout.CENTER);
+        add(buildBottomBar(), BorderLayout.SOUTH);
 
         refreshTable(repo.loadAll());
+        updateTotalFromFile();
+    }
+
+    private JPanel buildBottomBar() {
+        JPanel bar = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 8));
+        totalLabel.setFont(totalLabel.getFont().deriveFont(Font.BOLD, 14f));
+        bar.add(totalLabel);
+        return bar;
     }
 
     private JPanel buildAddPanel() {
@@ -311,6 +324,19 @@ public class FinancialTrackerFrame extends JFrame {
                     String.format("%.2f", t.getAmount())
             });
         }
+
+        updateTotalFromFile();
+    }
+
+    private void updateTotalFromFile() {
+        List<Transaction> all = repo.loadAll();
+        double total = 0.0;
+
+        for (Transaction t : all) {
+            total += t.getAmount();
+        }
+
+        totalLabel.setText(String.format("Total: $%.2f", total));
     }
 
     private void openCustomSearchDialog() {
