@@ -26,4 +26,12 @@ public class ReportService {
                 .thenComparing(Transaction::getTime)
                 .reversed());
     }
+    // Inside com.pluralsight.logic.ReportService
+
+    public List<Transaction> getPreviousYear(List<Transaction> all) {
+        LocalDate lastYear = LocalDate.now().minusYears(1);
+        LocalDate start = lastYear.withDayOfYear(1);
+        LocalDate end = lastYear.withDayOfYear(lastYear.lengthOfYear());
+        return filter.byDateRange(all, start, end);
+    }
 }

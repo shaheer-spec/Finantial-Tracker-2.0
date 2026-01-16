@@ -3,6 +3,8 @@ package com.pluralsight.ui;
 import com.pluralsight.core.Transaction;
 import com.pluralsight.data.TransactionRepository;
 import com.pluralsight.logic.ReportService;
+import com.pluralsight.logic.TransactionFilter;
+
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -43,10 +45,6 @@ public class UserInterface {
         }
     }
 
-    private void ledgerMenu() {
-        List<Transaction> all = repo.loadAll();
-        displayTable(all);
-    }
     // Inside com.pluralsight.ui.UserInterface
     private void handleTransaction(boolean isDeposit) {
         System.out.println(isDeposit ? "\n--- Add Deposit ---" : "\n--- Add Payment ---");
@@ -75,5 +73,80 @@ public class UserInterface {
         Transaction t = new Transaction(date, time, desc, vendor, amount);
         repo.save(t);
         System.out.println("Transaction recorded successfully!");
+    }
+    // Inside com.pluralsight.ui.UserInterface
+    private void handleCustomSearch() {
+        System.out.println("\n--- Custom Search (Leave blank to skip) ---");
+
+        System.out.print("Start Date (yyyy-MM-dd): ");
+        String startStr = scanner.nextLine();
+        LocalDate start = startStr.isEmpty() ? null : LocalDate.parse(startStr);
+
+        System.out.print("End Date (yyyy-MM-dd): ");
+        String endStr = scanner.nextLine();
+        LocalDate end = endStr.isEmpty() ? null : LocalDate.parse(endStr);
+
+        System.out.print("Description: ");
+        String desc = scanner.nextLine();
+
+        System.out.print("Vendor: ");
+        String vendor = scanner.nextLine();
+
+        System.out.print("Amount: ");
+        String amountStr = scanner.nextLine();
+        Double amount = amountStr.isEmpty() ? null : Double.parseDouble(amountStr);
+
+        // Get data, TransactionFilter it, and display
+        List<Transaction> all = repo.loadAll();
+        List<Transaction> results = TransactionFilter.customSearch(all, start, end, desc, vendor, amount);
+
+        displayTable(results);
+    }
+    // Inside com.pluralsight.ui.UserInterface
+
+    private void ledgerMenu() {
+        boolean inLedger = true;
+        while (inLedger) {
+            System.out.println("\n--- Ledger Menu ---");
+            System.out.println("A) All | D) Deposits | P) Payments | R) Reports | H) Home");
+            String choice = scanner.nextLine().toUpperCase();
+
+            // Load fresh data for each selection to ensure accuracy
+            List<Transaction> allTransactions = repo.loadAll();
+
+            switch (choice) {
+                case "A" -> displayTable(allTransactions);
+                case "D" -> displayTable(TransactionFilter.depositsOnly(allTransactions));
+                case "P" -> displayTable(TransactionFilter.paymentsOnly(allTransactions));
+                case "R" -> reportsMenu(allTransactions); // Pass data to the next menu
+                case "H" -> inLedger = false;
+                default -> System.out.println("Invalid option.");
+            }
+        }
+    }
+    // Inside com.pluralsight.ui.UserInterface
+
+    private void reportsMenu(List<Transaction> data) {
+        boolean inReports = true;
+        while (inReports) {
+            System.out.println("\n--- Reports ---");
+            System.out.println("1) MTD | 2) Previous Month | 3) YTD | 4) Previous Year | 5) Search Vendor | 6) Custom | 0) Back");
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1" -> displayTable(reportService.getMonthToDate(data));
+                case "2" -> displayTable(reportService.getPreviousMonth(data));
+                case "3" -> displayTable(reportService.getYearToDate(data));
+                case "4" -> displayTable(reportService.getPreviousYear(data)); // Logic in ReportService
+                case "5" -> {
+                    System.out.print("Enter Vendor: ");
+                    String v = scanner.nextLine();
+                    displayTable(TransactionFilter.byVendor(data, v));
+                }
+                case "6" -> handleCustomSearch(); // Calls the multi-TransactionFilter logic
+                case "0" -> inReports = false;
+                default -> System.out.println("Invalid option.");
+            }
+        }
     }
 }

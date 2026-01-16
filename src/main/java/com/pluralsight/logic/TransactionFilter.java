@@ -13,17 +13,29 @@ public class TransactionFilter {
                 .collect(Collectors.toList());
     }
 
-    public List<Transaction> byVendor(List<Transaction> list, String vendor) {
+    public static List<Transaction> byVendor(List<Transaction> list, String vendor) {
         return list.stream()
                 .filter(t -> t.getVendor().equalsIgnoreCase(vendor))
                 .collect(Collectors.toList());
     }
 
-    public List<Transaction> depositsOnly(List<Transaction> list) {
+    public static List<Transaction> depositsOnly(List<Transaction> list) {
         return list.stream().filter(t -> t.getAmount() > 0).collect(Collectors.toList());
     }
 
-    public List<Transaction> paymentsOnly(List<Transaction> list) {
+    public static List<Transaction> paymentsOnly(List<Transaction> list) {
         return list.stream().filter(t -> t.getAmount() < 0).collect(Collectors.toList());
+    }
+    // Inside com.pluralsight.logic.TransactionFilter
+    public static List<Transaction> customSearch(List<Transaction> list,
+                                                 LocalDate start, LocalDate end,
+                                                 String desc, String vendor, Double amount) {
+        return list.stream()
+                .filter(t -> (start == null || !t.getDate().isBefore(start)))
+                .filter(t -> (end == null || !t.getDate().isAfter(end)))
+                .filter(t -> (desc.isEmpty() || t.getDescription().equalsIgnoreCase(desc)))
+                .filter(t -> (vendor.isEmpty() || t.getVendor().equalsIgnoreCase(vendor)))
+                .filter(t -> (amount == null || t.getAmount() == amount))
+                .collect(Collectors.toList());
     }
 }
