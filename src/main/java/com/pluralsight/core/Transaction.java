@@ -1,4 +1,4 @@
-package com.pluralsight;
+package com.pluralsight.core;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

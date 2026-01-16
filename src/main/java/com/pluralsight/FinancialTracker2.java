@@ -1,10 +1,10 @@
 package com.pluralsight;
 
+import com.pluralsight.core.Transaction;
+
 import java.io.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class FinancialTracker2 {
