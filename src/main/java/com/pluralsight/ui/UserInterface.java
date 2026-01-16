@@ -24,6 +24,7 @@ public class UserInterface {
             System.out.println("P) Make Payment");
             System.out.println("L) Ledger");
             System.out.println("X) Exit");
+            System.out.print("Your choice: ");
 
             String choice = scanner.nextLine().toUpperCase();
             switch (choice) {
