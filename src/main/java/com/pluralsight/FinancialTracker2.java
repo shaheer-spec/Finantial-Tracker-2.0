@@ -21,7 +21,6 @@ public class FinancialTracker2 {
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
 
-        //example commit
         while (running) {
             System.out.println("╔═══════════════════════════════════════╗");
             System.out.println("║       Welcome to TransactionApp       ║");
