@@ -20,6 +20,7 @@ public class FinancialTracker2 {
 
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
+        //lskdgdddddd
 
         while (running) {
             System.out.println("╔═══════════════════════════════════════╗");
